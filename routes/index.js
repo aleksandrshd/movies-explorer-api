@@ -7,13 +7,6 @@ const auth = require('../middlewares/auth');
 const { login, createUser } = require('../controllers/users');
 const NotFoundError = require('../errors/NotFoundError');
 
-// краш-тест сервера - убрать после проверки
-router.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
 router.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
