@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const { httpStatusCodes } = require('../utils/constants');
+const { httpStatusCodes, messages } = require('../utils/constants');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
@@ -25,10 +25,10 @@ const createUser = async (req, res, next) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map((error) => error.message);
-      return next(new BadRequestError(`Переданы некорректные данные при создании пользователя. ${errors.join(', ')}`));
+      return next(new BadRequestError(`${messages.userCreateInvData} ${errors.join(', ')}`));
     }
     if (err.code === 11000) {
-      return next(new ConflictError('Пользователь с указанным email уже зарегестрирован!'));
+      return next(new ConflictError(messages.userEmailAlreadyExist));
     }
     return next(err);
   }
@@ -43,14 +43,17 @@ const updateUser = async (req, res, next) => {
     });
 
     if (!user) {
-      return next(new NotFoundError('Пользователь не найден!'));
+      return next(new NotFoundError(messages.userIdNotFound));
     }
 
     return res.json(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map((error) => error.message);
-      return next(new BadRequestError(`Переданы некорректные данные при обновлении профиля. ${errors.join(', ')}`));
+      return next(new BadRequestError(`${messages.userPatchInvData} ${errors.join(', ')}`));
+    }
+    if (err.code === 11000) {
+      return next(new ConflictError(messages.userEmailAlreadyExist));
     }
     return next(err);
   }
@@ -62,13 +65,13 @@ const login = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
-      return next(new UnauthorizedError('Введены некорректные почта или пароль!'));
+      return next(new UnauthorizedError(messages.userInvEmailOrPassword));
     }
 
     const matched = await bcrypt.compare(password, user.password);
 
     if (!matched) {
-      throw new UnauthorizedError('Введены некорректные почта или пароль!');
+      throw new UnauthorizedError(messages.userInvEmailOrPassword);
     }
 
     const token = jwt.sign(
@@ -89,7 +92,7 @@ const getCurrentUserInfo = async (req, res, next) => {
     const user = await User.findById(id);
 
     if (!user) {
-      return next(new NotFoundError('Пользователь не найден!'));
+      return next(new NotFoundError(messages.userIdNotFound));
     }
 
     return res.json({
@@ -98,7 +101,7 @@ const getCurrentUserInfo = async (req, res, next) => {
     });
   } catch (err) {
     if (err.name === 'CastError') {
-      return next(new BadRequestError('Передан некорректный id пользователя!'));
+      return next(new BadRequestError(messages.userInvalidId));
     }
     return next(err);
   }

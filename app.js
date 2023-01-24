@@ -18,11 +18,11 @@ app.use(cors());
 
 app.use(helmet());
 
+app.use(requestLogger);
+
 app.use(apiLimiter);
 
 app.use(bodyParser.json());
-
-app.use(requestLogger);
 
 app.use(routes);
 

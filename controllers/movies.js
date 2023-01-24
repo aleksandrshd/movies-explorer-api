@@ -1,5 +1,5 @@
 const Movie = require('../models/movie');
-const { httpStatusCodes } = require('../utils/constants');
+const { httpStatusCodes, messages } = require('../utils/constants');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
@@ -35,7 +35,7 @@ const createMovie = async (req, res, next) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map((error) => error.message);
-      return next(new BadRequestError(`Переданы некорректные данные при создании карточки. ${errors.join(', ')}`));
+      return next(new BadRequestError(`${messages.movieCreateInvData} ${errors.join(', ')}`));
     }
     return next(err);
   }
@@ -47,17 +47,17 @@ const deleteMovie = async (req, res, next) => {
     const movie = await Movie.findById(id);
 
     if (!movie) {
-      return next(new NotFoundError('Фильм c указанным id не найден!'));
+      return next(new NotFoundError(messages.movieIdNotFound));
     }
 
     if (movie.owner.toHexString() === req.user._id) {
       await Movie.findByIdAndRemove(id);
-      return res.json({ message: 'Фильм удалён из избранного' });
+      return res.json({ message: messages.movieDeleted });
     }
-    return next(new ForbiddenError('Удаление фильмов, добавленных другими пользователями запрещено!'));
+    return next(new ForbiddenError(messages.movieDeletionForbidden));
   } catch (err) {
     if (err.name === 'CastError') {
-      return next(new BadRequestError('Передан некорректный id фильма!'));
+      return next(new BadRequestError(messages.movieInvalidId));
     }
     return next(err);
   }

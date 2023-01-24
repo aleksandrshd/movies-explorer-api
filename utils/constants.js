@@ -10,4 +10,18 @@ const httpStatusCodes = {
 
 const urlRegEx = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/;
 
-module.exports = { httpStatusCodes, urlRegEx };
+const messages = {
+  movieCreateInvData: 'Переданы некорректные данные при создании фильма.',
+  movieIdNotFound: 'Фильм c указанным id не найден!',
+  movieDeleted: 'Фильм удалён из избранного',
+  movieDeletionForbidden: 'Удаление фильмов, добавленных другими пользователями запрещено!',
+  movieInvalidId: 'Передан некорректный id фильма!',
+  userCreateInvData: 'Переданы некорректные данные при создании пользователя.',
+  userEmailAlreadyExist: 'Пользователь с указанным email уже зарегестрирован!',
+  userIdNotFound: 'Пользователь не найден!',
+  userPatchInvData: 'Переданы некорректные данные при обновлении профиля.',
+  userInvEmailOrPassword: 'Введены некорректные почта или пароль!',
+  userInvalidId: 'Передан некорректный id пользователя!',
+};
+
+module.exports = { httpStatusCodes, urlRegEx, messages };
