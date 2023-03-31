@@ -98,6 +98,7 @@ const getCurrentUserInfo = async (req, res, next) => {
     return res.json({
       name: user.name,
       email: user.email,
+      _id: user._id,
     });
   } catch (err) {
     if (err.name === 'CastError') {

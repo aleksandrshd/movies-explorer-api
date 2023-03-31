@@ -36,5 +36,6 @@ mongoose.connect(`mongodb://${MONGO_IP}:${MONGO_PORT}/bitfilmsdb`, {
   useNewUrlParser: true,
 }, () => {
   app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);
   });
 });
